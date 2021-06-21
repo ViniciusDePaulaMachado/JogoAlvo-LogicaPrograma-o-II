@@ -1,0 +1,152 @@
+<meta charset="utf-8">
+<canvas width="1280" height="720" ></canvas>
+
+<script>
+
+	var tela = document.querySelector("canvas");
+	var pincel = tela.getContext("2d");
+
+	var raio = 10;
+	var soma1 = 10;
+	var soma2 = 20;
+
+	var resoluçaoX = 720;
+	var resoluçaoY = 1280;
+
+	var pontos = 0;
+	var acertos = 0;
+	var errou;
+
+	var textoDeAcertoPosX = 560;
+	var textoDeAcertoPosY = 22;	
+
+	var posicaoX;
+	var posicaoY;
+
+	var tempoDoAlvoMs = 1200;
+
+
+
+	function criaTexto(texto,x,y,cor) {
+
+	    pincel.font='25px Georgia';
+        pincel.fillStyle=cor;
+        pincel.fillText(texto, x, y); 
+
+	}
+
+	function criaAlvo(x,y,raio,cor) {
+
+		pincel.fillStyle = cor;
+		pincel.beginPath();
+		pincel.arc(x,y,raio,0,2 * 3.14)
+		pincel.fill();
+
+	}
+
+	function cordenadaXYAleatorio(limite) {
+
+		return Math.floor(Math.random() * limite);
+
+	}
+
+	function desenhaAlvo(x,y) {
+
+		criaAlvo(x,y,raio + soma2,"red");
+		criaAlvo(x,y,raio + soma1,"white");
+		criaAlvo(x,y,raio,"red");
+
+	}
+
+	function desenhaNaTela() {
+
+		//redor da tela
+		pincel.strokeStyle = "black";
+		pincel.strokeRect(0,0,resoluçaoY,resoluçaoX);
+		//linha
+		pincel.strokeStyle = "black";
+		pincel.strokeRect(0,0, resoluçaoY,30);
+		//==
+		criaTexto("Pontos " + pontos,20,22,"black")
+		criaTexto("Acertos " + acertos,1130,22,"black")
+
+	}
+
+	function calculaAcertos() {
+
+		if(acertos == 5) {
+
+			criaTexto("normal",textoDeAcertoPosX - 20 ,textoDeAcertoPosY,"black");
+		}
+		if(acertos == 10) {
+
+			criaTexto("bom ",textoDeAcertoPosX ,textoDeAcertoPosY - 1 ,"green");
+		}
+		if(acertos == 15) {
+
+			criaTexto("legal", textoDeAcertoPosX - 20,textoDeAcertoPosY - 1,"blue");
+		}
+		if(acertos == 25) {
+
+			criaTexto("Epico",textoDeAcertoPosX - 20 ,textoDeAcertoPosY,"purple");
+		}
+		if(acertos == 50 && 60 && 70 && 80 && 90 && 100) {
+
+			criaTexto("lendario", textoDeAcertoPosX,textoDeAcertoPosY,"orange");
+		}
+		if(errou) {
+
+			acertos = 0;
+		}
+
+	}
+
+	function limpaTela() {
+
+		pincel.clearRect(0,0,resoluçaoY,resoluçaoX);
+
+	}
+
+
+	function dispara(evento) {
+
+		var x = evento.pageX - tela.offsetLeft;
+		var y = evento.pageY - tela.offsetTop;
+
+		if( (x > posicaoX - raio) &&
+			(x < posicaoX + raio) &&
+			(y > posicaoY - raio) &&
+			(y < posicaoY + raio)) {
+
+				criaTexto("Acertou!!",360,300,"lightgreen");	
+				pontos = pontos + 100;
+				errou = false;
+				acertos++
+
+		} else {
+
+			pontos = pontos - 1500;
+			criaTexto("Errou - 1500 pontos ",360,150,"red");
+			errou = true;
+			
+		}
+	}
+
+	function atualizaTela() {
+
+		limpaTela();
+		calculaAcertos();	
+		posicaoX = cordenadaXYAleatorio(1280);
+		posicaoY = cordenadaXYAleatorio(650) + 70;
+		desenhaAlvo(posicaoX,posicaoY);
+		desenhaNaTela();
+
+	}
+
+	console.log(tempoDoAlvoMs);
+	setInterval(atualizaTela,tempoDoAlvoMs);
+	tela.onclick = dispara;
+
+
+</script>
+
